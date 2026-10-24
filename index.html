@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>iOS/iPadOS Analytics Parser</title>
+  <title>iOS/iPadOS Analytics Parser Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-800 p-4 md:p-8">
@@ -12,7 +12,7 @@
       <span>📊</span> iOS/iPadOS Analytics Parser Pro
     </h1>
     <p class="text-gray-600 mb-6 text-sm">
-      Upload file Analytics (<code class="bg-gray-100 px-1 py-0.5 rounded text-red-500">.ips</code> / <code class="bg-gray-100 px-1 py-0.5 rounded text-red-500">.txt</code> / <code class="bg-gray-100 px-1 py-0.5 rounded text-red-500">.synced</code>) untuk mengekstrak statistik baterai dan sistem secara otomatis tanpa input manual.
+      Upload file Analytics (<code class="bg-gray-100 px-1 py-0.5 rounded text-red-500">.ips</code> / <code class="bg-gray-100 px-1 py-0.5 rounded text-red-500">.txt</code> / <code class="bg-gray-100 px-1 py-0.5 rounded text-red-500">.synced</code>) untuk mengekstrak informasi baterai dan kesehatan sistem secara transparan.
     </p>
 
     <!-- File Input -->
@@ -25,49 +25,65 @@
     <!-- Output Box -->
     <div id="resultBox" class="hidden space-y-6">
       
-      <!-- Baterai Section -->
+      <!-- Statistik Baterai -->
       <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 space-y-3">
         <h2 class="text-md font-bold text-gray-800 border-b pb-2 flex items-center gap-2">
-          <span>🔋</span> Statistik Baterai (Pure Log)
+          <span>🔋</span> Statistik Baterai & Kesehatan Fisik
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          
           <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-            <span class="text-gray-500 block text-xs">Cycle Count (CC)</span>
+            <span class="text-gray-500 block text-xs font-semibold">Cycle Count (CC)</span>
             <span id="resCC" class="text-xl font-bold text-blue-600">-</span>
+            <span class="text-[11px] text-gray-400 block mt-1">Jumlah siklus pengisian penuh yang sudah dilalui baterai.</span>
           </div>
+
           <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-            <span class="text-gray-500 block text-xs">Maximum Capacity (Health)</span>
+            <span class="text-gray-500 block text-xs font-semibold">Maximum Capacity (Health)</span>
             <span id="resHealth" class="text-xl font-bold text-green-600">-</span>
+            <span class="text-[11px] text-gray-400 block mt-1">Persentase kesehatan baterai dibandingkan kondisi awal pabrik.</span>
           </div>
+
           <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-            <span class="text-gray-500 block text-xs">Apple Raw Max Capacity</span>
+            <span class="text-gray-500 block text-xs font-semibold">Apple Raw Max Capacity</span>
             <span id="resRaw" class="text-base font-semibold text-gray-700">-</span>
+            <span class="text-[11px] text-gray-400 block mt-1">Kapasitas maksimal aktual mentah dari sensor hardware.</span>
           </div>
+
           <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-            <span class="text-gray-500 block text-xs">Maximum FCC</span>
+            <span class="text-gray-500 block text-xs font-semibold">Maximum FCC (Full Charge Capacity)</span>
             <span id="resFCC" class="text-base font-semibold text-gray-700">-</span>
+            <span class="text-[11px] text-gray-400 block mt-1">Kapasitas penuh aktual saat baterai terisi 100%.</span>
           </div>
+
           <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm md:col-span-2">
-            <span class="text-gray-500 block text-xs">Suhu Rata-Rata Baterai</span>
+            <span class="text-gray-500 block text-xs font-semibold">Suhu Rata-Rata Baterai</span>
             <span id="resTemp" class="text-base font-semibold text-gray-700">-</span>
+            <span class="text-[11px] text-gray-400 block mt-1">Suhu operasional rata-rata tercatat pada komponen baterai.</span>
           </div>
+
         </div>
       </div>
 
-      <!-- Sistem & Kesehatan Perangkat Section -->
+      <!-- Informasi Sistem & Riwayat Error -->
       <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 space-y-3">
         <h2 class="text-md font-bold text-gray-800 border-b pb-2 flex items-center gap-2">
-          <span>⚙️</span> Performa & Riwayat Sistem
+          <span>⚙️</span> Diagnostik Sistem & Stabilitas
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          
           <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-            <span class="text-gray-500 block text-xs">Indikasi Restart / Kernel Panic</span>
+            <span class="text-gray-500 block text-xs font-semibold">Status Stabilitas (Kernel Panic)</span>
             <span id="resPanic" class="text-base font-bold text-gray-700">-</span>
+            <span class="text-[11px] text-gray-400 block mt-1">Indikasi apakah perangkat pernah mengalami restart mendadak/crash sistem.</span>
           </div>
+
           <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-            <span class="text-gray-500 block text-xs">Total Log / Baris Terbaca</span>
+            <span class="text-gray-500 block text-xs font-semibold">Total Ukuran Log Terbaca</span>
             <span id="resLines" class="text-base font-semibold text-gray-700">-</span>
+            <span class="text-[11px] text-gray-400 block mt-1">Jumlah baris data mentah yang berhasil diproses di browser.</span>
           </div>
+
         </div>
       </div>
 
@@ -95,10 +111,8 @@
     function parseAnalyticsCompletely(text) {
       document.getElementById('resultBox').classList.remove('hidden');
 
-      // Helper pencari fleksibel (mencakup JSON keys, string plist, atau format key-value log Apple)
       function extractValue(keys) {
         for (let key of keys) {
-          // Cek format JSON / standard key: "Key": value atau <key>Key</key>
           let regex1 = new RegExp(`["']?${key}["']?\\s*[:=]\\s*([\\d\\.]+|"[^"]+"|true|false)`, 'i');
           let match = text.match(regex1);
           if (match && match[1]) {
@@ -114,18 +128,17 @@
         return null;
       }
 
-      // Ekstraksi Data Baterai
+      // Ekstraksi Data
       let cc = extractValue(['CycleCount', 'cycle_count', 'Cycle Count']);
       let rawCap = extractValue(['AppleRawMaxCapacity', 'NominalChargeCapacity', 'MaxCapacity']);
       let fcc = extractValue(['MaximumFCC', 'FullChargeCapacity', 'FCC']);
       let health = extractValue(['MaximumCapacityPercent', 'BatteryHealth', 'MaximumCapacity']);
       let temp = extractValue(['AvgTemperature', 'Temperature', 'battery_temp']);
 
-      // Cek Indikasi Restart / Kernel Panic
-      let hasPanic = text.includes('kernel panic') || text.includes('AppleMobileFileIntegrity') || text.includes('ResetCounter') || text.includes('watchdog');
-      let panicText = hasPanic ? "Terdeteksi Log Crash/Panic" : "Aman (Normal)";
+      // Perbaikan Deteksi Panic (Hanya cari keyword error yang benar-benar valid)
+      let hasRealPanic = text.includes('panic(cpu') || text.includes('AproxResetCounter') || text.includes('watchdog timeout') || text.toLowerCase().includes('kernel panic');
+      let panicText = hasRealPanic ? "Terdeteksi Indikasi Restart/Crash" : "Sistem Stabil (Normal)";
 
-      // Hitung total baris file
       let totalLines = text.split('\n').length;
 
       // Render ke UI
@@ -143,7 +156,7 @@
       
       let panicElem = document.getElementById('resPanic');
       panicElem.innerText = panicText;
-      panicElem.className = hasPanic ? "text-base font-bold text-amber-600" : "text-base font-bold text-green-600";
+      panicElem.className = hasRealPanic ? "text-base font-bold text-red-600" : "text-base font-bold text-green-600";
 
       document.getElementById('resLines').innerText = `${totalLines.toLocaleString()} baris data`;
     }
