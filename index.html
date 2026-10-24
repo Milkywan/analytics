@@ -3,76 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>iOS/iPadOS Battery Analytics Parser</title>
+  <title>iOS/iPadOS Analytics Parser</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-800 p-4 md:p-8">
-  <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8">
+  <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8">
     <h1 class="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-      <span>🔋</span> iOS/iPadOS Battery Analytics Parser
+      <span>📊</span> iOS/iPadOS Analytics Parser Pro
     </h1>
     <p class="text-gray-600 mb-6 text-sm">
-      Upload file Analytics (<code class="bg-gray-100 px-1 py-0.5 rounded text-red-500">.ips</code> / <code class="bg-gray-100 px-1 py-0.5 rounded text-red-500">.txt</code>) dari iPhone atau iPad kamu untuk mengekstrak kondisi baterai secara akurat.
+      Upload file Analytics (<code class="bg-gray-100 px-1 py-0.5 rounded text-red-500">.ips</code> / <code class="bg-gray-100 px-1 py-0.5 rounded text-red-500">.txt</code> / <code class="bg-gray-100 px-1 py-0.5 rounded text-red-500">.synced</code>) untuk mengekstrak statistik baterai dan sistem secara otomatis tanpa input manual.
     </p>
 
-    <!-- Form & Inputs -->
-    <div class="space-y-4 mb-6">
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih File Log Analytics:</label>
-        <input type="file" id="fileInput" accept=".ips,.txt,.ca.synced" 
-          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-xl cursor-pointer">
-      </div>
-
-      <!-- Device / Design Capacity Selection -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1">Model Perangkat (Referensi):</label>
-          <select id="deviceSelect" class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-blue-500 focus:border-blue-500">
-            <option value="custom">-- Input Manual (Custom) --</option>
-            <option value="8034">iPad Pro 11-inch (Default / Fallback Sample ~8034 mAh)</option>
-            <option value="3274">iPhone 15 Pro (3274 mAh)</option>
-            <option value="4383">iPhone 15 Pro Max / 14 Pro Max (4383 mAh)</option>
-            <option value="2815">iPhone 12 / 12 Pro (2815 mAh)</option>
-            <option value="3687">iPhone 12 Pro Max (3687 mAh)</option>
-            <option value="7580">iPad Air 4 / Air 5 (7580 mAh)</option>
-            <option value="10307">iPad Pro 12.9-inch (10307 mAh)</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1">Design Capacity Pabrik (mAh):</label>
-          <input type="number" id="designCapacityInput" placeholder="Contoh: 8034" value="8034" 
-            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-blue-500 focus:border-blue-500">
-        </div>
-      </div>
+    <!-- File Input -->
+    <div class="mb-6">
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih File Log Analytics:</label>
+      <input type="file" id="fileInput" accept=".ips,.txt,.ca.synced" 
+        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-xl cursor-pointer">
     </div>
 
     <!-- Output Box -->
-    <div id="resultBox" class="hidden bg-gray-50 border border-gray-200 rounded-2xl p-6 space-y-3">
-      <h2 class="text-lg font-bold text-gray-800 border-b pb-2">📊 Hasil Analisis Baterai</h2>
+    <div id="resultBox" class="hidden space-y-6">
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-        <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-          <span class="text-gray-500 block text-xs">Cycle Count (CC)</span>
-          <span id="resCC" class="text-xl font-bold text-blue-600">-</span>
-        </div>
-        <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-          <span class="text-gray-500 block text-xs">Maximum Capacity (Health)</span>
-          <span id="resHealth" class="text-xl font-bold text-green-600">-</span>
-          <span id="healthSource" class="text-[10px] text-gray-400 block mt-0.5"></span>
-        </div>
-        <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-          <span class="text-gray-500 block text-xs">Apple Raw Max Capacity</span>
-          <span id="resRaw" class="text-base font-semibold text-gray-700">-</span>
-        </div>
-        <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-          <span class="text-gray-500 block text-xs">Maximum FCC</span>
-          <span id="resFCC" class="text-base font-semibold text-gray-700">-</span>
-        </div>
-        <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm md:col-span-2">
-          <span class="text-gray-500 block text-xs">Suhu Rata-Rata Baterai</span>
-          <span id="resTemp" class="text-base font-semibold text-gray-700">-</span>
+      <!-- Baterai Section -->
+      <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 space-y-3">
+        <h2 class="text-md font-bold text-gray-800 border-b pb-2 flex items-center gap-2">
+          <span>🔋</span> Statistik Baterai (Pure Log)
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+            <span class="text-gray-500 block text-xs">Cycle Count (CC)</span>
+            <span id="resCC" class="text-xl font-bold text-blue-600">-</span>
+          </div>
+          <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+            <span class="text-gray-500 block text-xs">Maximum Capacity (Health)</span>
+            <span id="resHealth" class="text-xl font-bold text-green-600">-</span>
+          </div>
+          <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+            <span class="text-gray-500 block text-xs">Apple Raw Max Capacity</span>
+            <span id="resRaw" class="text-base font-semibold text-gray-700">-</span>
+          </div>
+          <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+            <span class="text-gray-500 block text-xs">Maximum FCC</span>
+            <span id="resFCC" class="text-base font-semibold text-gray-700">-</span>
+          </div>
+          <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm md:col-span-2">
+            <span class="text-gray-500 block text-xs">Suhu Rata-Rata Baterai</span>
+            <span id="resTemp" class="text-base font-semibold text-gray-700">-</span>
+          </div>
         </div>
       </div>
+
+      <!-- Sistem & Kesehatan Perangkat Section -->
+      <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 space-y-3">
+        <h2 class="text-md font-bold text-gray-800 border-b pb-2 flex items-center gap-2">
+          <span>⚙️</span> Performa & Riwayat Sistem
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+            <span class="text-gray-500 block text-xs">Indikasi Restart / Kernel Panic</span>
+            <span id="resPanic" class="text-base font-bold text-gray-700">-</span>
+          </div>
+          <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+            <span class="text-gray-500 block text-xs">Total Log / Baris Terbaca</span>
+            <span id="resLines" class="text-base font-semibold text-gray-700">-</span>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <p class="text-center text-xs text-gray-400 mt-6">
@@ -81,24 +79,7 @@
   </div>
 
   <script>
-    const deviceSelect = document.getElementById('deviceSelect');
-    const designCapacityInput = document.getElementById('designCapacityInput');
     const fileInput = document.getElementById('fileInput');
-
-    // Sync dropdown with manual input
-    deviceSelect.addEventListener('change', () => {
-      if (deviceSelect.value !== 'custom') {
-        designCapacityInput.value = deviceSelect.value;
-      }
-      recalculateIfLoaded();
-    });
-
-    designCapacityInput.addEventListener('input', () => {
-      deviceSelect.value = 'custom';
-      recalculateIfLoaded();
-    });
-
-    let currentFileText = "";
 
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -106,69 +87,65 @@
 
       const reader = new FileReader();
       reader.onload = (evt) => {
-        currentFileText = evt.target.result;
-        parseAnalytics(currentFileText);
+        parseAnalyticsCompletely(evt.target.result);
       };
       reader.readAsText(file);
     });
 
-    function recalculateIfLoaded() {
-      if (currentFileText) {
-        parseAnalytics(currentFileText);
-      }
-    }
-
-    function parseAnalytics(text) {
-      let cc = null;
-      let rawCap = null;
-      let fcc = null;
-      let directHealth = null;
-      let temp = null;
-
-      // Extract Cycle Count
-      const ccMatch = text.match(/"CycleCount"\s*:\s*(\d+)/i) || text.match(/<key>CycleCount<\/key>\s*<integer>(\d+)<\/integer>/i);
-      if (ccMatch) cc = ccMatch[1];
-
-      // Extract Raw Capacity
-      const rawMatch = text.match(/"AppleRawMaxCapacity"\s*:\s*(\d+)/i) || text.match(/<key>AppleRawMaxCapacity<\/key>\s*<integer>(\d+)<\/integer>/i);
-      if (rawMatch) rawCap = parseInt(rawMatch[1]);
-
-      // Extract FCC
-      const fccMatch = text.match(/"MaximumFCC"\s*:\s*(\d+)/i) || text.match(/<key>MaximumFCC<\/key>\s*<integer>(\d+)<\/integer>/i);
-      if (fccMatch) fcc = parseInt(fccMatch[1]);
-
-      // Extract Direct Maximum Capacity % if exists
-      const healthMatch = text.match(/"MaximumCapacityPercent"\s*:\s*(\d+)/i) || text.match(/<key>MaximumCapacityPercent<\/key>\s*<integer>(\d+)<\/integer>/i);
-      if (healthMatch) directHealth = healthMatch[1];
-
-      // Extract Average Temperature
-      const tempMatch = text.match(/"AvgTemperature"\s*:\s*(\d+)/i) || text.match(/<key>AvgTemperature<\/key>\s*<integer>(\d+)<\/integer>/i);
-      if (tempMatch) temp = tempMatch[1];
-
-      // UI Rendering
+    function parseAnalyticsCompletely(text) {
       document.getElementById('resultBox').classList.remove('hidden');
-      document.getElementById('resCC').innerText = cc ? cc : 'Tidak ditemukan';
-      document.getElementById('resRaw').innerText = rawCap ? `${rawCap} mAh` : 'Tidak ditemukan';
-      document.getElementById('resFCC').innerText = fcc ? `${fcc} mAh` : 'Tidak ditemukan';
-      document.getElementById('resTemp').innerText = temp ? `${temp}°C` : 'Tidak ditemukan';
 
-      // Health % Calculation
-      const designCap = parseFloat(designCapacityInput.value);
-      const resHealthElem = document.getElementById('resHealth');
-      const healthSourceElem = document.getElementById('healthSource');
+      // Helper pencari fleksibel (mencakup JSON keys, string plist, atau format key-value log Apple)
+      function extractValue(keys) {
+        for (let key of keys) {
+          // Cek format JSON / standard key: "Key": value atau <key>Key</key>
+          let regex1 = new RegExp(`["']?${key}["']?\\s*[:=]\\s*([\\d\\.]+|"[^"]+"|true|false)`, 'i');
+          let match = text.match(regex1);
+          if (match && match[1]) {
+            return match[1].replace(/["']/g, '');
+          }
 
-      if (directHealth) {
-        resHealthElem.innerText = `${directHealth}%`;
-        healthSourceElem.innerText = "(Terbaca langsung dari log)";
-      } else if ((fcc || rawCap) && designCap > 0) {
-        const currentCap = fcc || rawCap;
-        const calculated = ((currentCap / designCap) * 100).toFixed(1);
-        resHealthElem.innerText = `${calculated}%`;
-        healthSourceElem.innerText = `(Dihitung dari ${currentCap} mAh / ${designCap} mAh design capacity)`;
-      } else {
-        resHealthElem.innerText = "Tidak dapat dihitung";
-        healthSourceElem.innerText = "(Butuh file log & design capacity valid)";
+          let regex2 = new RegExp(`<key>${key}</key>\\s*<(integer|real|string)>([^<]+)</(integer|real|string)>`, 'i');
+          let match2 = text.match(regex2);
+          if (match2 && match2[3]) {
+            return match2[3].trim();
+          }
+        }
+        return null;
       }
+
+      // Ekstraksi Data Baterai
+      let cc = extractValue(['CycleCount', 'cycle_count', 'Cycle Count']);
+      let rawCap = extractValue(['AppleRawMaxCapacity', 'NominalChargeCapacity', 'MaxCapacity']);
+      let fcc = extractValue(['MaximumFCC', 'FullChargeCapacity', 'FCC']);
+      let health = extractValue(['MaximumCapacityPercent', 'BatteryHealth', 'MaximumCapacity']);
+      let temp = extractValue(['AvgTemperature', 'Temperature', 'battery_temp']);
+
+      // Cek Indikasi Restart / Kernel Panic
+      let hasPanic = text.includes('kernel panic') || text.includes('AppleMobileFileIntegrity') || text.includes('ResetCounter') || text.includes('watchdog');
+      let panicText = hasPanic ? "Terdeteksi Log Crash/Panic" : "Aman (Normal)";
+
+      // Hitung total baris file
+      let totalLines = text.split('\n').length;
+
+      // Render ke UI
+      document.getElementById('resCC').innerText = cc ? cc : 'Tidak ditemukan di log';
+      document.getElementById('resRaw').innerText = rawCap ? `${rawCap} mAh` : 'Tidak ditemukan di log';
+      document.getElementById('resFCC').innerText = fcc ? `${fcc} mAh` : 'Tidak ditemukan di log';
+      
+      if (health) {
+        document.getElementById('resHealth').innerText = `${health.replace('%', '')}%`;
+      } else {
+        document.getElementById('resHealth').innerText = 'Tidak terekam eksplisit';
+      }
+
+      document.getElementById('resTemp').innerText = temp ? `${temp}°C` : 'Tidak ditemukan di log';
+      
+      let panicElem = document.getElementById('resPanic');
+      panicElem.innerText = panicText;
+      panicElem.className = hasPanic ? "text-base font-bold text-amber-600" : "text-base font-bold text-green-600";
+
+      document.getElementById('resLines').innerText = `${totalLines.toLocaleString()} baris data`;
     }
   </script>
 </body>
